@@ -10,10 +10,10 @@ def optimal_rotational_quaternion(r):
     """
     # @formatter:off
     return [
-        [r[0][0]+r[1][1]+r[2][2], r[1][2]-r[2][1],         r[2][0]-r[0][2],         r[0][1]-r[1][0]        ],
-        [r[1][2]-r[2][1],         r[0][0]-r[1][1]-r[2][2], r[0][1]+r[1][0],         r[0][2]+r[2][0]        ],
-        [r[2][0]-r[0][2],         r[0][1]+r[1][0],        -r[0][0]+r[1][1]-r[2][2], r[1][2]+r[2][1]        ],
-        [r[0][1]-r[1][0],         r[0][2]+r[2][0],         r[1][2]+r[2][1],        -r[0][0]-r[1][1]+r[2][2]],
+        [r[0][0] + r[1][1] + r[2][2], r[1][2] - r[2][1], r[2][0] - r[0][2], r[0][1] - r[1][0]],
+        [r[1][2] - r[2][1], r[0][0] - r[1][1] - r[2][2], r[0][1] + r[1][0], r[0][2] + r[2][0]],
+        [r[2][0] - r[0][2], r[0][1] + r[1][0], -r[0][0] + r[1][1] - r[2][2], r[1][2] + r[2][1]],
+        [r[0][1] - r[1][0], r[0][2] + r[2][0], r[1][2] + r[2][1], -r[0][0] - r[1][1] + r[2][2]],
     ]
     # @formatter:on
 
@@ -49,6 +49,7 @@ def squared_deviation(frame, target):
     sd = tf.reduce_sum(frame ** 2 + target ** 2) - 2 * lmax
     return sd
 
+
 def rmsd(frame, target, n_atoms):
     """Convenience function for actually returning the RMSD
     
@@ -61,6 +62,14 @@ def multi_sd(frames, target):
     return tf.map_fn(lambda x: squared_deviation(x, target), frames, name='MultiMSD')
 
 
+def pairwise_sd(frames, targets):
+    return tf.transpose(tf.map_fn(lambda x: multi_sd(frames, x), targets, name='PairwiseSD'))
+
+
+def pairwise_msd(frames, targets):
+    n_atoms = tf.to_float(frames.get_shape()[1])
+    return pairwise_sd(frames, targets) / n_atoms
+
+
 def sum_sd(frames, target):
     return tf.reduce_sum(multi_sd(frames, target), name='SumMSD')
-

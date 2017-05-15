@@ -4,9 +4,9 @@ import warnings
 import os
 
 
-def load():
+def load(debug=False):
     so = pkg_resources.resource_filename(__name__, 'rmsd/librmsd.Release.so')
-    if not os.path.isfile(so):
+    if debug or not os.path.isfile(so):
         so = pkg_resources.resource_filename(__name__, 'rmsd/librmsd.Debug.so')
         if not os.path.isfile(so):
             raise FileNotFoundError("Could not find the RMSD op shared library. "
