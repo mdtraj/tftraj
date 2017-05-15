@@ -43,3 +43,33 @@ def test_against_mdtraj(sess):
     ]
     md_result = np.array(md_result)
     np.testing.assert_almost_equal(result, md_result, decimal=5)
+
+
+def test_against_mdtraj_diff_xy(sess):
+    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+    rmsd = tftraj.rmsd_op.load()
+    inds = [5, 19, 234]
+    target = np.array(traj.xyz[inds])
+    prmsd = rmsd.pairwise_msd(traj.xyz, target)
+    result = sess.run(prmsd)
+    print(result.shape)
+
+    md_result = [
+        md.rmsd(traj, traj, i) ** 2
+        for i in inds
+    ]
+    md_result = np.array(md_result).T
+    np.testing.assert_almost_equal(result, md_result, decimal=5)
+
+
+def test_transpose(sess):
+    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+    rmsd = tftraj.rmsd_op.load()
+    inds = [5, 19, 234]
+    target = np.array(traj.xyz[inds])
+    prmsd1 = rmsd.pairwise_msd(traj.xyz, target)
+    r1 = sess.run(prmsd1)
+    prmsd2 = rmsd.pairwise_msd(target, traj.xyz)
+    r2 = sess.run(prmsd2)
+
+    np.testing.assert_almost_equal(r1, r2.T, decimal=5)
