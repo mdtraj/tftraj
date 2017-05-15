@@ -7,4 +7,5 @@ add_library(rmsd SHARED
             util.h
             )
 target_include_directories(rmsd PUBLIC ${Tensorflow_INCLUDE_DIR})
+target_compile_options(rmsd PRIVATE -msse2 -msse3 -msse4)
 set_target_properties(rmsd PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
