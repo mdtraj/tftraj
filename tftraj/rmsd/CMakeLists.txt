@@ -1,0 +1,10 @@
+add_library(rmsd SHARED
+            rmsd.cpp
+            theobald_rmsd.c
+            center.c
+            msvccompat.h
+            sse_swizzle.h
+            util.h
+            )
+target_include_directories(rmsd PUBLIC ${Tensorflow_INCLUDE_DIR})
+set_target_properties(rmsd PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
