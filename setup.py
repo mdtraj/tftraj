@@ -27,12 +27,12 @@ class build_cmake(Command):
     def run(self):
         """Run command."""
         try:
-            os.mkdir('cmake-build')
+            os.mkdir('cmake-build-release')
         except OSError:
             pass
         print("Running cmake")
-        subprocess.check_call(['cmake', '..'], cwd='cmake-build')
-        subprocess.check_call(['make', '-j{}'.format(multiprocessing.cpu_count())], cwd='cmake-build')
+        subprocess.check_call(['cmake', '-DCMAKE_BUILD_TYPE=Release', '..'], cwd='cmake-build-release')
+        subprocess.check_call(['make', '-j{}'.format(multiprocessing.cpu_count())], cwd='cmake-build-release')
 
 
 setup(name='tftraj',

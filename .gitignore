@@ -1,6 +1,7 @@
 __pycache__/
 .ipynb_checkpoints/
 .idea/
+*.egg-info
 
 /cmake-build-debug/
 /cmake-build-release/
