@@ -100,11 +100,14 @@ public:
         inplace_center_and_trace_atom_major(confcopyflat1.data(), g1v.data(), static_cast<int>(N1), n_atoms);
         inplace_center_and_trace_atom_major(confcopyflat2.data(), g2v.data(), static_cast<int>(N2), n_atoms);
 
-        for (int i = 0; i < N1; i++) {
-            for (int j = 0; j < N2; j++) {
+        int i = 0;
+        int j = 0;
+#pragma omp parallel for collapse(2)
+        for (i = 0; i < N1; i++) {
+            for (j = 0; j < N2; j++) {
                 float msd = msd_atom_major(n_atoms, n_atoms,
                                            &confcopyflat1.data()[i * n_atoms * 3],
-                                           &confcopyflat1.data()[j * n_atoms * 3],
+                                           &confcopyflat2.data()[j * n_atoms * 3],
                                            g1v(i), g2v(j),
                                            0, NULL);
                 output(i, j) = msd;
