@@ -1,17 +1,12 @@
-import tensorflow as tf
-import tftraj.rmsd_op
 import mdtraj as md
 import numpy as np
+import tensorflow as tf
+
 import tftraj.rmsd
-import pytest
+import tftraj.rmsd_op
 
 
-
-
-
-def test_gradients():
-    sess = tf.Session()
-
+def test_gradients(sess):
     traj = md.load('fip35.500.xtc', top='fip35.pdb')
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234, 235]
@@ -27,9 +22,8 @@ def test_gradients():
     print(grad_result.shape)
     print(grad_result)
 
-def test_gradients_vs_tensorflow():
-    sess = tf.Session()
 
+def test_gradients_vs_tensorflow(sess):
     traj = md.load('fip35.500.xtc', top='fip35.pdb')
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234, 235]
@@ -46,4 +40,3 @@ def test_gradients_vs_tensorflow():
     grad_from_tf = sess.run(grad_from_tf)
 
     np.testing.assert_almost_equal(grad_from_op, grad_from_tf, decimal=3)
-

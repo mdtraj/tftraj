@@ -1,15 +1,8 @@
-import tensorflow as tf
-import tftraj.rmsd
 import mdtraj as md
 import numpy as np
-import pytest
+import tensorflow as tf
 
-
-@pytest.fixture(scope='module')
-def sess():
-    sess = tf.Session()
-    yield sess
-    sess.close()
+import tftraj.rmsd
 
 
 def test_against_mdtraj_diff_xy(sess):
