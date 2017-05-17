@@ -36,10 +36,10 @@ def _pairwise_msd_grad(op, grad, rot_grad):
     grad = tf.expand_dims(tf.expand_dims(grad, axis=-1), axis=-1)
 
     rots = op.outputs[1]
-    dxy = grad * (confs1 - tf.matmul(big_confs2, rots))
+    dxy = grad * (confs1 - tf.matmul(big_confs2, rots, transpose_b=True))
     sum_dxy = 2 * tf.reduce_sum(dxy, axis=1) / n_atom
 
-    dyx = grad * (confs2 - tf.matmul(big_confs1, rots))
+    dyx = grad * (confs2 - tf.matmul(big_confs1, rots, transpose_b=False))
     sum_dyx = 2 * tf.reduce_sum(dyx, axis=0) / n_atom
 
     return sum_dxy, sum_dyx
