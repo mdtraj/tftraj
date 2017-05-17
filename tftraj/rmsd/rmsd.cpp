@@ -10,11 +10,16 @@ REGISTER_OP("PairwiseMSD")
         .Input("confs1: float32")
         .Input("confs2: float32")
         .Output("pairwise_msd: float32")
+        .Output("rotation_mats: float32")
         .SetShapeFn([](::tensorflow::shape_inference::InferenceContext * c) {
             ShapeHandle sh1, sh2;
             TF_RETURN_IF_ERROR(c->WithRank(c->input(0), 3, &sh1));
             TF_RETURN_IF_ERROR(c->WithRank(c->input(1), 3, &sh2));
-            c->set_output(0, c->Matrix(c->Dim(sh1, 0), c->Dim(sh2, 0)));
+            auto msd_shape = c->Matrix(c->Dim(sh1, 0), c->Dim(sh2, 0));
+            c->set_output(0, msd_shape);
+
+            auto rot_shape = c->MakeShape({c->Dim(sh1, 0), c->Dim(sh2, 0), 3, 3});
+            c->set_output(1, rot_shape);
             return Status::OK();
         });
 
@@ -22,9 +27,6 @@ REGISTER_OP("PairwiseMSD")
 #include <tensorflow/core/framework/op_kernel.h>
 #include "theobald_rmsd.h"
 #include "center.h"
-
-void inplace_center_and_trace_atom_major(float * coords, float * traces,
-                                         const int n_frames, const int n_atoms);
 
 class PairwiseMSDOp : public OpKernel {
 public:
@@ -52,18 +54,21 @@ public:
         const int64 N1 = confs1.shape().dim_size(0);
         const int64 N2 = confs2.shape().dim_size(0);
         TensorShape output_shape{N1, N2};
+        TensorShape rot_output_shape{N1, N2, 3, 3};
         TensorShape g1_shape{N1};
         TensorShape g2_shape{N2};
 
         auto flatconfs1 = confs1.flat<float>();
         auto flatconfs2 = confs2.flat<float>();
 
-        // Create an output tensor
         Tensor * output_tensor = nullptr;
         OP_REQUIRES_OK(context, context->allocate_output(0, output_shape, &output_tensor));
         auto output = output_tensor->matrix<float>();
 
-        //Tensor * confcopy1 = nullptr;
+        Tensor * rot_output_tensor = nullptr;
+        context->allocate_output(1, rot_output_shape, &rot_output_tensor);
+        auto rot_output = rot_output_tensor->flat<float>();
+
         Tensor confcopy1(DT_FLOAT, TensorShape({}));
         OP_REQUIRES_OK(context, context->allocate_temp(DT_FLOAT, confs1.shape(), &confcopy1));
         auto confcopyflat1 = confcopy1.flat<float>();
@@ -78,20 +83,20 @@ public:
         OP_REQUIRES_OK(context, context->allocate_temp(DT_FLOAT, g2_shape, &g2));
         auto g2v = g2.vec<float>();
 
-
+        // TODO: Use mutable input
         for (int conf_i = 0; conf_i < N1; conf_i++) {
             for (int atom_i = 0; atom_i < n_atoms; atom_i++) {
                 for (int dim_i = 0; dim_i < 3; dim_i++) {
-                    confcopyflat1(conf_i * n_atoms * 3 + atom_i * 3 + dim_i) = flatconfs1(
-                            conf_i * n_atoms * 3 + atom_i * 3 + dim_i);
+                    confcopyflat1(conf_i * n_atoms * 3 + atom_i * 3 + dim_i) = \
+                        flatconfs1(conf_i * n_atoms * 3 + atom_i * 3 + dim_i);
                 }
             }
         }
         for (int conf_i = 0; conf_i < N2; conf_i++) {
             for (int atom_i = 0; atom_i < n_atoms; atom_i++) {
                 for (int dim_i = 0; dim_i < 3; dim_i++) {
-                    confcopyflat2(conf_i * n_atoms * 3 + atom_i * 3 + dim_i) = flatconfs2(
-                            conf_i * n_atoms * 3 + atom_i * 3 + dim_i);
+                    confcopyflat2(conf_i * n_atoms * 3 + atom_i * 3 + dim_i) = \
+                        flatconfs2(conf_i * n_atoms * 3 + atom_i * 3 + dim_i);
                 }
             }
         }
@@ -109,7 +114,7 @@ public:
                                            &confcopyflat1.data()[i * n_atoms * 3],
                                            &confcopyflat2.data()[j * n_atoms * 3],
                                            g1v(i), g2v(j),
-                                           0, NULL);
+                                           1, &rot_output.data()[i * N2 * 9 + j * 9]);
                 output(i, j) = msd;
             }
         }
