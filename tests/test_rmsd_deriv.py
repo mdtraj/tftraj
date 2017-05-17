@@ -22,8 +22,7 @@ def test_works(sess, traj):
     print(grad_result)
 
 
-def test_vs_tensorflow_target(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_vs_tensorflow_target(sess, traj):
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234, 235]
     target = np.array(traj.xyz[inds])
@@ -41,8 +40,7 @@ def test_vs_tensorflow_target(sess):
     np.testing.assert_almost_equal(grad_from_op, grad_from_tf, decimal=3)
 
 
-def test_vs_tensorflow_target_few_atoms(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_vs_tensorflow_target_few_atoms(sess, traj):
     traj.atom_slice(np.arange(traj.n_atoms)[::10])
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234, 235]
@@ -61,8 +59,7 @@ def test_vs_tensorflow_target_few_atoms(sess):
     np.testing.assert_almost_equal(grad_from_op, grad_from_tf, decimal=3)
 
 
-def test_vs_tensorflow_traj(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_vs_tensorflow_traj(sess, traj):
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234, 235]
     target = np.array(traj.xyz[inds])
@@ -81,8 +78,7 @@ def test_vs_tensorflow_traj(sess):
     np.testing.assert_almost_equal(grad_from_op, grad_from_tf, decimal=3)
 
 
-def test_vs_tensorflow_both_input(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_vs_tensorflow_both_input(sess, traj):
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234, 235]
     target = np.array(traj.xyz[inds])

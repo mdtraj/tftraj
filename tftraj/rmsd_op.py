@@ -1,11 +1,8 @@
-import tensorflow as tf
-import pkg_resources
-import warnings
 import os
-
+import pkg_resources
+import tensorflow as tf
+import warnings
 from tensorflow.python.framework import ops
-from tensorflow.python.ops import array_ops
-from tensorflow.python.ops import sparse_ops
 
 
 def load(debug=False):
@@ -20,26 +17,42 @@ def load(debug=False):
     return mod
 
 
+def drot_dcentered(confs1, confs2, rots, grad):
+    N1 = int(confs1.get_shape()[0])
+    N2 = int(confs2.get_shape()[0])
+    n_atom = float(int(confs1.get_shape()[1]))
+
+    expand_confs1 = tf.expand_dims(confs1, axis=1)
+    big_confs1 = tf.tile(expand_confs1, [1, N2, 1, 1])
+    expand_confs2 = tf.expand_dims(confs2, axis=0)
+    big_confs2 = tf.tile(expand_confs2, [N1, 1, 1, 1])
+
+    dxy = expand_confs1 - tf.matmul(big_confs2, rots, transpose_b=True)
+    dxy = 2 * dxy / n_atom
+
+    dyx = expand_confs2 - tf.matmul(big_confs1, rots, transpose_b=False)
+    dyx = 2 * dyx / n_atom
+
+    grad = tf.expand_dims(tf.expand_dims(grad, axis=-1), axis=-1)
+    dr_dc1 = tf.reduce_sum(grad * dxy, axis=1)
+    dr_dc2 = tf.reduce_sum(grad * dyx, axis=0)
+    return dr_dc1, dr_dc2
+
+
+def dcenter_dx(confs1, confs2, dr_dc1, dr_dc2):
+    # Gradients for centering at origin
+    centered1 = confs1 - tf.reduce_mean(confs1, axis=1, keep_dims=True)
+    centered2 = confs2 - tf.reduce_mean(confs2, axis=1, keep_dims=True)
+    center_grad1 = tf.gradients(centered1, [confs1], grad_ys=dr_dc1)[0]
+    center_grad2 = tf.gradients(centered2, [confs2], grad_ys=dr_dc2)[0]
+    return center_grad1, center_grad2
+
+
 @ops.RegisterGradient("PairwiseMSD")
 def _pairwise_msd_grad(op, grad, rot_grad):
     # TODO: Throw error if rot_grad is non-zero?
     confs1, confs2 = op.inputs
-    N1 = int(confs1.get_shape()[0])
-    N2 = int(confs2.get_shape()[0])
-    n_atom = float(int(confs1.get_shape()[1]))
-    confs1 = tf.expand_dims(confs1, axis=1)
-    confs2 = tf.expand_dims(confs2, axis=0)
-
-    big_confs1 = tf.tile(confs1, [1, N2, 1, 1])
-    big_confs2 = tf.tile(confs2, [N1, 1, 1, 1])
-
-    grad = tf.expand_dims(tf.expand_dims(grad, axis=-1), axis=-1)
-
     rots = op.outputs[1]
-    dxy = grad * (confs1 - tf.matmul(big_confs2, rots, transpose_b=True))
-    sum_dxy = 2 * tf.reduce_sum(dxy, axis=1) / n_atom
-
-    dyx = grad * (confs2 - tf.matmul(big_confs1, rots, transpose_b=False))
-    sum_dyx = 2 * tf.reduce_sum(dyx, axis=0) / n_atom
-
-    return sum_dxy, sum_dyx
+    dr_dc1, dr_dc2 = drot_dcentered(confs1, confs2, rots, grad)
+    dc_dx1, dc_dx2 = dcenter_dx(confs1, confs2, dr_dc1, dr_dc2)
+    return dc_dx1, dc_dx2

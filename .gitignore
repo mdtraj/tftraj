@@ -9,3 +9,5 @@ __pycache__/
 # Build artifacts
 *.so
 
+/fs_peptide
+/.cache
