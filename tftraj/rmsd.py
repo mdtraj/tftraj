@@ -59,6 +59,7 @@ def pairwise_sd(frames, targets):
 
 
 def pairwise_msd(frames, targets):
+    frames -= tf.reduce_mean(frames, axis=1, keep_dims=True)
+    targets -= tf.reduce_mean(targets, axis=1, keep_dims=True)
     n_atoms = tf.to_float(frames.get_shape()[1])
     return pairwise_sd(frames, targets) / n_atoms
-

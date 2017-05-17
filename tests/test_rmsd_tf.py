@@ -21,5 +21,4 @@ def test_against_mdtraj_diff_xy(sess, traj):
     ]
     md_result = np.array(md_result).T
 
-    # TODO: Tolerance really bad here! It was within 5 decimal points for fip
-    np.testing.assert_allclose(result, md_result, rtol=50.0, atol=0.3)
+    np.testing.assert_almost_equal(result, md_result, decimal=5)
