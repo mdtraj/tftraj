@@ -50,14 +50,6 @@ def squared_deviation(frame, target):
     return sd
 
 
-def rmsd(frame, target, n_atoms):
-    """Convenience function for actually returning the RMSD
-    
-    You should probably use squared_deviation when optimizing.
-    """
-    return tf.sqrt(squared_deviation(frame, target) / n_atoms)
-
-
 def multi_sd(frames, target):
     return tf.map_fn(lambda x: squared_deviation(x, target), frames, name='MultiMSD')
 
@@ -70,6 +62,3 @@ def pairwise_msd(frames, targets):
     n_atoms = tf.to_float(frames.get_shape()[1])
     return pairwise_sd(frames, targets) / n_atoms
 
-
-def sum_sd(frames, target):
-    return tf.reduce_sum(multi_sd(frames, target), name='SumMSD')

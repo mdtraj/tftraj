@@ -6,8 +6,7 @@ import tftraj.rmsd
 import tftraj.rmsd_op
 
 
-def test_works(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_works(sess, traj):
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234, 235]
     target = np.array(traj.xyz[inds])

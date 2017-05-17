@@ -25,8 +25,7 @@ def test_n_atoms_error(sess):
         sess.run(prmsd)
 
 
-def test_against_mdtraj(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_against_mdtraj(sess, traj):
     rmsd = tftraj.rmsd_op.load()
     prmsd, _ = rmsd.pairwise_msd(traj.xyz, traj.xyz)
     result = sess.run(prmsd)
@@ -37,11 +36,10 @@ def test_against_mdtraj(sess):
         for i in range(traj.n_frames)
     ]
     md_result = np.array(md_result)
-    np.testing.assert_almost_equal(result, md_result, decimal=5)
+    np.testing.assert_almost_equal(result, md_result, decimal=4)
 
 
-def test_against_mdtraj_diff_xy(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_against_mdtraj_diff_xy(sess, traj):
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234]
     target = np.array(traj.xyz[inds])
@@ -57,10 +55,7 @@ def test_against_mdtraj_diff_xy(sess):
     np.testing.assert_almost_equal(result, md_result, decimal=5)
 
 
-
-
-def test_transpose(sess):
-    traj = md.load('fip35.500.xtc', top='fip35.pdb')
+def test_transpose(sess, traj):
     rmsd = tftraj.rmsd_op.load()
     inds = [5, 19, 234]
     target = np.array(traj.xyz[inds])
