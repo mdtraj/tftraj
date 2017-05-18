@@ -39,7 +39,7 @@ trajectories. Specifically, between 2800 (stride = 100) frames and 28 targets
 Algorithm | Time / ms
 ----------|----------
 mdtraj    |   33.3
-tf-cpu    |    0.9
+tf-cpu    |    1.6
 tf-native | 22843.6
 
 The code between the `tf-cpu` custom op and `mdtraj` is largely the same, although

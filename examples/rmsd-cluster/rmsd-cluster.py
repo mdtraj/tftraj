@@ -18,6 +18,7 @@ def main(n_clusters=2, cluster_diff_multiplier=1.0):
     nearest_cluster = msd * tf.nn.softmax(-msd)
     cluster_dist = tf.reduce_mean(nearest_cluster, axis=(0, 1))
     cluster_diff, _ = rmsd_op.pairwise_msd(target, target)
+    assert n_clusters == 2, 'This example only works for n_clusters=2 right now'
     cluster_diff = cluster_diff[0, 1]
     loss = cluster_dist - tf.tanh(cluster_diff*10)
 
