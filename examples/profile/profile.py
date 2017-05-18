@@ -17,7 +17,7 @@ traj_target_xyz = np.array(traj_target.xyz)
 print(len(traj_xyz), len(traj_target_xyz))
 
 rmsd = tftraj.rmsd_op.load()
-prmsd = rmsd.pairwise_msd(traj_xyz, traj_target_xyz)
+prmsd, _ = rmsd.pairwise_msd(traj_xyz, traj_target_xyz)
 
 results['tf-cpu'] = timeit.timeit('sess.run(prmsd)', number=30, globals=globals()) / 30
 results['mdtraj'] = timeit.timeit('[md.rmsd(traj, traj_target, i) ** 2 for i in range(traj_target.n_frames)]',
