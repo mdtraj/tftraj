@@ -1,0 +1,43 @@
+package:
+  name: tftraj
+  #version: {{ GIT_DESCRIBE_TAG }}
+  version: 1
+
+source:
+  path: ../
+
+build:
+  #number: {{ GIT_DESCRIBE_NUMBER }}
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - python
+    - tensorflow
+    - setuptools
+  run:
+    - python
+    - tensorflow
+    - numpy
+
+test:
+  requires:
+    - pytest
+    - biopython
+    - mdtraj
+  source_files:
+    - pytest.ini
+    - fs_peptide/*
+    - tests/*
+
+  commands:
+    - pytest
+
+about:
+  home: http://github.com/mpharrigan
+  license: MIT
+  license_family: MIT
+  #summary: ''
+  #description:
+

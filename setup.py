@@ -47,4 +47,7 @@ setup(name='tftraj',
       cmdclass={'cmake': build_cmake,
                 'build_ext': build_ext},
       zip_safe=False,
+      package_data={
+          'tftraj': ['rmsd/librmsd.Release.so'],
+      },
       )
