@@ -38,7 +38,7 @@ class build_cmake(Command):
 setup(name='tftraj',
       author='Matthew Harrigan',
       author_email='matthew.harrigan@outlook.com',
-      description="Molecular dynamics trajectory utilities in Tensorflow",
+      description="Molecular dynamics trajectory analysis in Tensorflow",
       version=1,
       license='MIT',
       url='http:/github.com/mdtraj/tftraj',

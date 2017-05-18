@@ -35,9 +35,8 @@ test:
     - pytest
 
 about:
-  home: http://github.com/mpharrigan
+  home: http://github.com/mdtraj/tftraj
   license: MIT
   license_family: MIT
-  #summary: ''
-  #description:
+  summary: "Molecular dynamics trajectory analysis in Tensorflow"
 
