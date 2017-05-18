@@ -26,7 +26,7 @@ This might be somewhat slow, so there is a native CPU operation that is very fas
 ```python
 traj = md.load('trajectory.xtc', top='topology.pdb')
 rmsd = tftraj.rmsd_op.load()
-prmsd = rmsd.pairwise_msd(traj.xyz, traj.xyz)
+prmsd, _ = rmsd.pairwise_msd(traj.xyz, traj.xyz)
 result = sess.run(prmsd)
 ```
 
