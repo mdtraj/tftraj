@@ -1,7 +1,10 @@
 TFTraj
 ======
 
-Molecular dynamics analysis routines implemented in tensorflow
+Molecular dynamics analysis routines implemented in Tensorflow.
+
+See this [blog post](http://mpharrigan.com/2017-tensorflow-rmsd.html) for
+motivations and an overview of the RMSD computation.
 
 ## RMSD
 
@@ -19,7 +22,6 @@ result = sess.run(prmsd)
 ```
 
 This might be somewhat slow, so there is a native CPU operation that is very fast. 
-Right now it does not include derivatives, so it can't be used in optimizations.
 
 ```python
 traj = md.load('trajectory.xtc', top='topology.pdb')
@@ -50,7 +52,7 @@ arrays directly instead of the convenience `md.Trajectory` objects.
 ## Building
 
 The custom op requires a working c++ compiler and CMake. 
-Running `python setup.py develop` should automaticall invoke CMake. 
+Running `python setup.py develop` should automatically invoke CMake. 
 It will use `cmake-build-release/` as a scratch (build) directory. To change
 CMake options, change into that directory and use `cmake ..` or `ccmake ..`.
 The final shared library is copied back into the source tree, much to CMake's
@@ -66,4 +68,26 @@ python -c "import tensorflow as tf; print(tf.sysconfig.get_include())"
 
 automatically. Make sure `python` is the right one when you run CMake.
 
-The package requires support for SSE instructions and OpenMP. 
+The package requires compiler and cpu support for SSE instructions and OpenMP. 
+
+### Running tests
+
+I've tested this package on Linux and Python 3.5. Other configurations
+may work.
+
+To run the tests, run from the source directory:
+
+```python
+pytest
+```
+
+You can also use `conda-build` to build and run tests in a pristine environment. Make
+sure you have the `conda-forge` channel added to your `.condarc` and run
+
+```python
+conda build conda-recipe/
+```
+
+### Examples
+
+There are a couple examples in the `examples/` folder.
