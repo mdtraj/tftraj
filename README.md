@@ -3,7 +3,7 @@ TFTraj
 
 Molecular dynamics analysis routines implemented in Tensorflow.
 
-See this [blog post](http://mpharrigan.com/2017/tensorflow-rmsd.html) for
+See this [blog post](https://medium.com/@pandelab/tensorflow-rmsd-using-tensorflow-for-things-it-was-not-designed-to-do-ada4c9aa0ea2) for
 motivations and an overview of the RMSD computation.
 
 ## RMSD
