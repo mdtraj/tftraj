@@ -65,3 +65,10 @@ def test_transpose(sess, traj):
     r2 = sess.run(prmsd2)
 
     np.testing.assert_almost_equal(r1, r2.T, decimal=5)
+
+def test_with_placeholder():
+    traj = tf.placeholder(tf.float32, (None, 5,3))
+    target = tf.constant(np.random.rand(2,5,3), dtype=tf.float32)
+    rmsd = tftraj.rmsd_op.load()
+    prmsd1, _ = rmsd.pairwise_msd(traj, target)
+

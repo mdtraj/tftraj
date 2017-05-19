@@ -18,8 +18,8 @@ def load(debug=False):
 
 
 def drot_dcentered(confs1, confs2, rots, grad):
-    N1 = int(confs1.get_shape()[0])
-    N2 = int(confs2.get_shape()[0])
+    N1 = tf.shape(confs1)[0]
+    N2 = tf.shape(confs2)[0]
     n_atom = float(int(confs1.get_shape()[1]))
 
     expand_confs1 = tf.expand_dims(confs1, axis=1)
