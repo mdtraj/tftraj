@@ -77,14 +77,14 @@ may work.
 
 To run the tests, run from the source directory:
 
-```python
+```bash
 pytest
 ```
 
 You can also use `conda-build` to build and run tests in a pristine environment. Make
 sure you have the `conda-forge` channel added to your `.condarc` and run
 
-```python
+```bash
 conda build conda-recipe/
 ```
 
