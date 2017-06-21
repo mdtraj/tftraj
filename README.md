@@ -75,7 +75,14 @@ The package requires compiler and cpu support for SSE instructions and OpenMP.
 I've tested this package on Linux and Python 3.5. Other configurations
 may work.
 
-To run the tests, run from the source directory:
+The tests require the following molecular dyanmics dataset:
+
+https://figshare.com/articles/Fs_MD_Trajectories/1030363
+
+Download and extract the `fs_peptide` directory, and make
+sure it's at the top level of the source directory.
+
+To run the tests, `cd` to the source directory and use:
 
 ```bash
 pytest
